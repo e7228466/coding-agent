@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 # Override via REVIEWER_MODEL env var, e.g. "ollama/llama3.1" or "ollama/deepseek-r1"
 SONNET_MODEL    = os.getenv("REVIEWER_MODEL", "claude-sonnet-4-6")
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1")
+LLM_API_KEY     = os.getenv("LLM_API_KEY", "ollama")
 
 MAX_TOKENS = 4096   # raised from 1024 — complex reviews with many fixes need headroom
 MAX_DIFF_TOKENS = 8_000   # ~32 000 chars; truncate beyond this
@@ -113,7 +114,7 @@ async def _call_llm(
     if model.startswith("ollama/"):
         from openai import AsyncOpenAI  # imported lazily — not needed for Claude path
         ollama_model = model.removeprefix("ollama/")
-        client = AsyncOpenAI(base_url=OLLAMA_BASE_URL, api_key="ollama")
+        client = AsyncOpenAI(base_url=OLLAMA_BASE_URL, api_key=LLM_API_KEY)
         resp = await client.chat.completions.create(
             model=ollama_model,
             messages=[

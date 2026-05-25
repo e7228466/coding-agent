@@ -6,7 +6,13 @@ services:
     healthCheckPath: /health
     envVars:
       - key: ANTHROPIC_API_KEY
-        sync: false        # set manually in Render dashboard
+        sync: false        # optional — only needed for Opus supervisor step
+      - key: REVIEWER_MODEL
+        value: ollama/llama-3.3-70b-versatile
+      - key: OLLAMA_BASE_URL
+        value: https://api.groq.com/openai/v1
+      - key: LLM_API_KEY
+        sync: false        # Groq API key — set manually in Render dashboard
       - key: GITHUB_TOKEN
         sync: false
       - key: GITHUB_REPO
