@@ -58,12 +58,14 @@ class WebhookPayload(BaseModel):
     """
     pr_number: str = Field(..., description="PR number as a string, e.g. '42'")
     pr_branch: str = Field(..., description="Head branch name of the PR")
-    pr_sha: str = Field(..., description="Head commit SHA at trigger time (40 chars)")
+    pr_sha: str = Field(default="", description="Head commit SHA (resolved from GitHub if empty)")
     repo: str = Field(..., description="GitHub repo in owner/name format")
 
     @field_validator("pr_sha")
     @classmethod
     def sha_looks_valid(cls, v: str) -> str:
+        if v == "":
+            return v  # resolved later via GitHub API
         if len(v) < 7 or not all(c in "0123456789abcdefABCDEF" for c in v):
             raise ValueError(f"pr_sha does not look like a git SHA: {v!r}")
         return v.lower()

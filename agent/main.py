@@ -198,6 +198,16 @@ async def webhook(
         )
         return WebhookResponse.error_response("Repository not allowed")
 
+    # ── Resolve pr_sha if not provided by trigger ─────────────────────────────
+    if not payload.pr_sha:
+        try:
+            payload.pr_sha = await state.git.get_pr_head_sha(
+                repo=payload.repo, pr_number=payload.pr_number_int
+            )
+            logger.info("Resolved pr_sha from GitHub: %s", payload.pr_sha)
+        except Exception as exc:
+            logger.warning("Could not resolve pr_sha: %s — continuing without it", exc)
+
     log_ctx = {"repo": payload.repo, "pr": payload.pr_number, "sha": payload.pr_sha}
     logger.info("Webhook received", extra=log_ctx)
 

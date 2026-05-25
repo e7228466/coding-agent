@@ -64,6 +64,16 @@ class GitClient:
 
     # ── Public methods ────────────────────────────────────────────────────────
 
+    async def get_pr_head_sha(self, *, repo: str, pr_number: int) -> str:
+        """Return the head commit SHA of a pull request."""
+        def _fetch() -> str:
+            try:
+                gh_repo = self._gh.get_repo(repo)
+                return gh_repo.get_pull(pr_number).head.sha
+            except Exception as exc:
+                raise GitClientError(f"Failed to fetch PR head SHA: {exc}") from exc
+        return await asyncio.to_thread(_fetch)
+
     async def get_pr_diff(self, *, repo: str, pr_number: int) -> str:
         """
         Return the unified diff of a pull request as a plain string.
