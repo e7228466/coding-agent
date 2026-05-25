@@ -54,7 +54,7 @@ _TRUSTED_ASSOCIATIONS = frozenset({"OWNER", "MEMBER", "COLLABORATOR"})
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    anthropic_api_key: str
+    anthropic_api_key: str = ""  # optional — only needed for Opus supervisor
     github_token: str
     github_repo: str
     webhook_secret: str
