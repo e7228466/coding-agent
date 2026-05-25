@@ -1,0 +1,28 @@
+# requirements.txt
+# Pin exact versions for reproducible builds inside Harness CI.
+# Update with: pip-compile requirements.in
+
+# ── Web framework ─────────────────────────────────────────────────────────────
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+
+# ── Anthropic ─────────────────────────────────────────────────────────────────
+anthropic==0.40.0
+
+# ── OpenAI-compatible (Ollama, Groq, Together.ai, etc.) ───────────────────────
+openai==2.36.0
+
+# ── GitHub ────────────────────────────────────────────────────────────────────
+PyGithub==2.5.0
+
+# ── HTTP client (Harness API calls) ──────────────────────────────────────────
+httpx==0.28.0
+requests>=2.32.0
+
+# ── Config & validation ───────────────────────────────────────────────────────
+pydantic==2.10.3
+pydantic-settings==2.6.1
+python-dotenv==1.0.1
+
+# ── Dev / test (not installed in production Docker image) ────────────────────
+# Install with: pip install -r requirements-dev.txt

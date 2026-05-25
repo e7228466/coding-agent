@@ -1,0 +1,12 @@
+--- a/app/utils.py
++++ b/app/utils.py
+@@ -1,5 +1,10 @@
+ import json
+ 
+ def load_config(path: str) -> dict:
+     with open(path) as f:
+         return json.load(f)
++
++def save_config(path: str, data: dict) -> None:
++    with open(path, "w") as f:
++        json.dump(data, f, indent=2)

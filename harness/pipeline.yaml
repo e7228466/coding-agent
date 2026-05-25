@@ -1,0 +1,112 @@
+pipeline:
+  identifier: coding_agent_pipeline
+  name: Coding agent PR review and deploy
+  projectIdentifier: default_project
+  orgIdentifier: default
+  tags:
+    managed_by: coding_agent
+  variables:
+    - name: pr_number
+      type: String
+      value: ""
+      description: "Pull request number, injected by trigger"
+    - name: pr_branch
+      type: String
+      value: ""
+      description: "Head branch of the PR"
+    - name: pr_sha
+      type: String
+      value: ""
+      description: "Head commit SHA at trigger time"
+    - name: agent_fix_applied
+      type: String
+      value: "false"
+      description: "Set to true by the review step if agent pushed a fix commit"
+  properties:
+    ci:
+      codebase:
+        connectorRef: github_connector
+        repoName: claude-code
+        build: <+input>
+  stages:
+    - stage:
+        identifier: code_review
+        name: Code review
+        type: CI
+        spec:
+          cloneCodebase: true
+          infrastructure:
+            type: Cloud
+            spec:
+              platform:
+                os: Linux
+                arch: Amd64
+              runtime:
+                type: Cloud
+                spec: {}
+          execution:
+            steps:
+              - step:
+                  identifier: check_agent_fix_commit
+                  name: Check if triggered by agent fix
+                  type: Run
+                  spec:
+                    shell: Sh
+                    command: |
+                      COMMIT_MSG=$(git log -1 --pretty=%s)
+                      if echo "$COMMIT_MSG" | grep -q "\[agent-fix\]"; then
+                        echo "Triggered by agent-fix commit — skipping review loop"
+                        echo "##[set-output name=is_agent_fix;value=true]"
+                      else
+                        echo "Normal commit — proceeding with review"
+                        echo "##[set-output name=is_agent_fix;value=false]"
+                      fi
+                  outputVariables:
+                    - name: is_agent_fix
+                  failureStrategies:
+                    - onFailure:
+                        errors: [AllErrors]
+                        action:
+                          type: Ignore
+              - step:
+                  identifier: run_code_review
+                  name: Run code review agent
+                  type: Run
+                  when:
+                    stageStatus: Success
+                    condition: <+steps.check_agent_fix_commit.output.outputVariables.is_agent_fix> != "true"
+                  spec:
+                    shell: Sh
+                    command: |
+                      PR_NUMBER="<+pipeline.variables.pr_number>" \
+                      PR_BRANCH="<+pipeline.variables.pr_branch>" \
+                      PR_SHA="<+pipeline.variables.pr_sha>" \
+                      sh /harness/harness/call_agent.sh
+                    envVariables:
+                      AGENT_WEBHOOK_URL: <+secrets.getValue("agent_webhook_url")>
+                      WEBHOOK_SECRET: <+secrets.getValue("webhook_secret")>
+                      GITHUB_REPO: <+secrets.getValue("github_repo")>
+                  failureStrategies:
+                    - onFailure:
+                        errors: [AllErrors]
+                        action:
+                          type: Ignore
+                  outputVariables:
+                    - name: agent_fix_applied
+              - step:
+                  identifier: wait_after_fix
+                  name: Wait if fix was applied
+                  type: Run
+                  when:
+                    stageStatus: Success
+                    condition: <+steps.run_code_review.output.outputVariables.agent_fix_applied> == "true"
+                  spec:
+                    shell: Sh
+                    command: |
+                      echo "Agent fix applied — waiting 10s for GitHub to register commit"
+                      sleep 10
+                  failureStrategies:
+                    - onFailure:
+                        errors: [AllErrors]
+                        action:
+                          type: Ignore

@@ -1,0 +1,46 @@
+trigger:
+  identifier: pr-trigger
+  name: PR opened or updated
+  description: "Fires on every PR open, reopen, or synchronise event against main"
+
+  # ── Source ───────────────────────────────────────────────────────────────────
+  source:
+    type: Webhook
+    spec:
+      type: Github
+      spec:
+        connectorRef: github-connector
+        autoAbortPreviousExecutions: true   # cancel in-flight runs for the same PR
+        payloadConditions:
+          # Only fire for PRs targeting main or release/* branches
+          - key: targetBranch
+            operator: Regex
+            value: "^(main|release/.+)$"
+        headerConditions: []
+        actions:
+          - Open
+          - Reopen
+          - Synchronize   # new commit pushed to an existing PR
+
+  # ── Pipeline to fire ─────────────────────────────────────────────────────────
+  pipelineIdentifier: coding-agent-pipeline
+  inputYaml: |
+    pipeline:
+      identifier: coding-agent-pipeline
+      variables:
+        - name: pr_number
+          type: String
+          value: <+trigger.prNumber>
+        - name: pr_branch
+          type: String
+          value: <+trigger.sourceBranch>
+        - name: pr_sha
+          type: String
+          value: <+trigger.commitSha>
+
+  # ── Git-based polling fallback ────────────────────────────────────────────────
+  # If the webhook is missed (e.g. network hiccup), Harness polls every 2 minutes
+  pollInterval: 2
+
+  # ── Enabled ──────────────────────────────────────────────────────────────────
+  enabled: true

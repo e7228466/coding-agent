@@ -1,0 +1,6 @@
+{
+  "pr_number": "42",
+  "pr_branch": "feat/login",
+  "pr_sha": "abc1234def5678901234567890abcdef12345678",
+  "repo": "acme/backend"
+}

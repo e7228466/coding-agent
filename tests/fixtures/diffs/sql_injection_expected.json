@@ -1,0 +1,20 @@
+{
+  "verdict": "request_changes",
+  "summary": "One critical security issue found: the SQL query uses string interpolation which is vulnerable to injection. An unused import was also added.",
+  "issues": [
+    {
+      "file": "app/auth.py",
+      "line": 13,
+      "severity": "error",
+      "message": "SQL query uses f-string interpolation, making it vulnerable to injection attacks.",
+      "fix": "    cursor.execute(\"SELECT * FROM users WHERE id = ?\", (user_id,))"
+    },
+    {
+      "file": "app/utils.py",
+      "line": 2,
+      "severity": "warning",
+      "message": "Unused import 'sys' was added.",
+      "fix": null
+    }
+  ]
+}

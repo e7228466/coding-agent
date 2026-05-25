@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: coding-agent
+    env: docker
+    plan: starter          # $7/mo — keeps the service always on (no cold starts)
+    healthCheckPath: /health
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false        # set manually in Render dashboard
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: GITHUB_REPO
+        value: e7228466/claude-code
+      - key: WEBHOOK_SECRET
+        sync: false
+      - key: HARNESS_API_KEY
+        sync: false
+      - key: HARNESS_ACCOUNT_ID
+        value: gud1swfXS0SOFRk1ifG6Mw
+      - key: HARNESS_ORG_ID
+        value: default
+      - key: HARNESS_PROJECT_ID
+        value: default_project
+      - key: HARNESS_PIPELINE_ID
+        value: coding_agent_pipeline
+      - key: LOG_LEVEL
+        value: INFO

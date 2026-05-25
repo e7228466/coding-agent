@@ -1,0 +1,21 @@
+--- a/app/auth.py
++++ b/app/auth.py
+@@ -10,7 +10,7 @@ import sqlite3
+ def get_user(user_id: str) -> dict | None:
+     conn = sqlite3.connect("users.db")
+     cursor = conn.cursor()
+-    cursor.execute(f"SELECT * FROM users WHERE id = '{user_id}'")
++    cursor.execute(f"SELECT * FROM users WHERE id = '{user_id}'")  # added by dev
+     row = cursor.fetchone()
+     conn.close()
+     return dict(row) if row else None
+--- a/app/utils.py
++++ b/app/utils.py
+@@ -1,6 +1,7 @@
+ import os
++import sys
+ import json
+ 
+ def load_config(path: str) -> dict:
+     with open(path) as f:
+         return json.load(f)
