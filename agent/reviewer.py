@@ -125,7 +125,13 @@ async def _call_llm(
         )
         return resp.choices[0].message.content or ""
     else:
-        _client = anthropic_client or anthropic.AsyncAnthropic()
+        api_key = os.getenv("ANTHROPIC_API_KEY", "")
+        if not api_key:
+            raise ReviewerError(
+                "REVIEWER_MODEL is not set to an ollama/* model but ANTHROPIC_API_KEY is missing. "
+                "Set REVIEWER_MODEL=ollama/<model> and LLM_API_KEY=<groq-key> to use Groq."
+            )
+        _client = anthropic_client or anthropic.AsyncAnthropic(api_key=api_key)
         try:
             message = await _client.messages.create(
                 model=model,

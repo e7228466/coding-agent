@@ -57,6 +57,13 @@ class WebhookPayload(BaseModel):
       repo       → secret: github_repo
     """
     pr_number: str = Field(..., description="PR number as a string, e.g. '42'")
+
+    @field_validator("pr_number")
+    @classmethod
+    def pr_number_is_digit(cls, v: str) -> str:
+        if not v.isdigit():
+            raise ValueError(f"pr_number must be a numeric string, got: {v!r}")
+        return v
     pr_branch: str = Field(..., description="Head branch name of the PR")
     pr_sha: str = Field(default="", description="Head commit SHA (resolved from GitHub if empty)")
     repo: str = Field(..., description="GitHub repo in owner/name format")
