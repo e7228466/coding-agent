@@ -5,10 +5,12 @@ services:
     plan: starter          # $7/mo — keeps the service always on (no cold starts)
     healthCheckPath: /health
     envVars:
-      - key: ANTHROPIC_API_KEY
-        sync: false
       - key: REVIEWER_MODEL
-        value: claude-opus-4-8
+        value: ollama/llama-3.3-70b-versatile
+      - key: OLLAMA_BASE_URL
+        value: https://api.groq.com/openai/v1
+      - key: LLM_API_KEY
+        sync: false
       - key: GITHUB_TOKEN
         sync: false
       - key: GITHUB_REPO

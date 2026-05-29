@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 # ── Constants ─────────────────────────────────────────────────────────────────
 
 # Override via REVIEWER_MODEL env var, e.g. "ollama/llama3.1" or "ollama/deepseek-r1"
-SONNET_MODEL    = os.getenv("REVIEWER_MODEL", "claude-opus-4-8")
+SONNET_MODEL    = os.getenv("REVIEWER_MODEL", "ollama/llama-3.3-70b-versatile")
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1")
 LLM_API_KEY     = os.getenv("LLM_API_KEY", "ollama")
 
