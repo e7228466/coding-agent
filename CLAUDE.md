@@ -147,7 +147,7 @@ using HMAC-SHA256. Reject without processing if the signature does not match.
 
 | 役割 | モデル | ファイル | 呼び出し条件 |
 |---|---|---|---|
-| **Reviewer（一次審査）** | `ollama/llama3.1`（ローカル）or `claude-sonnet-4-6` | `reviewer.py` / `scripts/review.py` | 毎回必ず呼ぶ |
+| **Reviewer（一次審査）** | `ollama/llama3.1`（ローカル）or `claude-opus-4-8` | `reviewer.py` / `scripts/review.py` | 毎回必ず呼ぶ |
 | **Supervisor（監督）** | `claude-opus-4-5` | `supervisor.py` / `scripts/review.py` | Reviewer が必要と判断した場合のみ |
 
 ### Sonnet の役割（Reviewer）
@@ -358,7 +358,7 @@ pytest tests/ -v --cov=agent --cov-report=term-missing
 - Do not modify `harness/secrets.yaml` — secret values are managed outside this repo.
 - Do not change the model names in `reviewer.py` or `supervisor.py` without updating this file.
 - Do not call Opus (`claude-opus-4-5`) unconditionally — it must only be called when Sonnet sets `needs_supervision: true`.
-- Current Reviewer model: `claude-sonnet-4-6`. Current Supervisor model: `claude-opus-4-5`.
+- Current Reviewer model: `claude-opus-4-8`. Current Supervisor model: `claude-opus-4-5`.
 - Do not add synchronous blocking I/O inside `async def` functions — use `asyncio.to_thread()` if needed.
 - Do not add new environment variables without updating `.env.example` and this file.
 - Do not push to `main` directly — all changes go through PRs (the agent reviews its own fixes too).
